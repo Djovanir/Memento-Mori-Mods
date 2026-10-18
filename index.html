@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101010">
+  <title>Memento Mori — Painel Temporal</title>
+  <style>
+    :root{--bg:#101010;--outer:#171717;--card:#080808;--line:#342a22;--text:#ddd1bf;--sub:#a9967e;--accent:#eba760;--muted:#786c5c}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100dvh}
+    body:before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% -20%,rgba(140,89,35,.14),transparent 55%)}
+    .wrap{position:relative;max-width:1050px;margin:0 auto;padding:24px 16px 72px}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:19px;gap:12px}
+    .sigil{font-size:12px;letter-spacing:.16em;color:var(--sub);font-weight:700;text-transform:uppercase}
+    button{cursor:pointer;color:var(--text);background:#24201b;border:1px solid #483c31;border-radius:10px;padding:10px 14px;font-size:14px}
+    button:hover{background:#32291f}button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+    .panel{background:var(--outer);border:1px solid #2c2622;border-radius:23px;padding:clamp(18px,4vw,38px);box-shadow:0 20px 80px #0005}
+    h1{margin:4px 0 28px;text-align:center;text-transform:uppercase;font-size:clamp(22px,3vw,29px);font-weight:600;letter-spacing:.11em;color:#bfaa90}
+    .ornament{display:flex;align-items:center;justify-content:center;gap:14px;margin:0 auto 22px;color:#846444;font-size:12px;letter-spacing:.18em}
+    .ornament:before,.ornament:after{content:"";height:1px;width:clamp(32px,16vw,100px);background:linear-gradient(90deg,transparent,#65503a)}
+    .ornament:after{transform:rotate(180deg)}
+    .cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .card{background:var(--card);border:1px solid #1c1917;border-radius:19px;text-align:center;padding:clamp(24px,5vw,46px) 8px;min-width:0}
+    .eyebrow{font-size:clamp(13px,2.8vw,21px);color:var(--sub);text-transform:uppercase;letter-spacing:.08em;font-weight:400}
+    .number{font-size:clamp(39px,7vw,75px);font-weight:600;line-height:1.25;letter-spacing:.025em;font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--accent);margin:16px 0}
+    .unit{color:var(--sub);text-transform:uppercase;letter-spacing:.04em;font-size:clamp(11px,2.3vw,19px)}
+    .note{margin:26px 8px 0;text-align:center;font-size:13px;line-height:1.65;color:#9b8b76}
+    .footer{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-top:19px;color:var(--muted);font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+    .details{margin-top:23px;background:#111010;border:1px solid #2c2520;border-radius:15px;padding:20px 23px}
+    .section-label{font-size:12px;color:var(--sub);letter-spacing:.12em;text-transform:uppercase}
+    .meter{margin-top:15px;height:6px;background:#2b241e;border-radius:20px;overflow:hidden}.meter>.fill{width:0;height:100%;background:linear-gradient(90deg,#9d633b,var(--accent));transition:width .3s ease}
+    .details-meta{display:flex;justify-content:space-between;gap:16px;color:#ae9c83;font-size:12px;margin-top:11px}
+    .settings{margin-top:16px;display:none;background:#171513;border:1px solid #3d3127;border-radius:17px;padding:21px}.settings.open{display:block}
+    .settings h2{font-size:18px;color:#ceb69a;font-weight:500;margin:0 0 7px}.settings p{color:#a99a88;font-size:13px;line-height:1.55;margin:0 0 17px}
+    form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}label{display:flex;flex-direction:column;gap:8px;color:var(--sub);font-size:13px}input{width:100%;min-width:0;background:#0c0c0c;border:1px solid #493b2e;border-radius:9px;padding:12px;color:var(--text);font:inherit;color-scheme:dark}input[type=number]{appearance:textfield}
+    .form-actions{grid-column:1/-1;display:flex;gap:10px;align-items:center;flex-wrap:wrap}.primary{background:#ad7746;color:#0b0907;border-color:#bb8a57;font-weight:700}.primary:hover{background:#c08b57}
+    .hint{color:#93826f;font-size:12px} .hidden{display:none}
+    @media(max-width:580px){.wrap{padding:14px 12px 48px}.panel{padding:20px 13px;border-radius:18px}.cards{grid-template-columns:1fr;gap:12px}.card{padding:26px 10px}.number{font-size:clamp(48px,13vw,74px);margin:8px 0}.eyebrow{font-size:16px}.unit{font-size:14px}h1{margin-bottom:18px}form{grid-template-columns:1fr}.footer{font-size:10px}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header><div class="sigil">Sistema do Operador <span aria-hidden="true">/</span> Tempo</div><button id="config" type="button" aria-expanded="false" aria-controls="settings">Configurar</button></header>
+  <main class="panel">
+    <h1>Memento Mori</h1>
+    <div class="ornament">TEMPUS FUGIT</div>
+    <section class="cards" aria-label="Contadores temporais">
+      <article class="card"><div class="eyebrow">Finitude</div><div class="number" id="lifeDays">18.250</div><div class="unit">Dias estimados</div></article>
+      <article class="card"><div class="eyebrow">Marco do projeto</div><div class="number" id="projectDays">365</div><div class="unit">Dias restantes</div></article>
+    </section>
+    <section class="details" aria-label="Proporção de tempo vivido">
+      <div class="section-label">Horizonte convencional de vida</div>
+      <div class="meter" role="progressbar" aria-label="Proporção do horizonte de vida transcorrida" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="fill" id="lifeProgress"></div></div>
+      <div class="details-meta"><span id="lifeElapsed">Aguardando data de nascimento</span><span id="lifePercent">—</span></div>
+    </section>
+    <div class="note" id="demoNote">Demonstração com números ilustrativos. Configure as datas para iniciar a contagem real. O horizonte de vida é uma convenção pessoal, não uma previsão de morte.</div>
+    <div class="footer"><span id="todayLabel">DATA ATUAL</span><span id="phaseLabel">TEMPO NÃO É META</span></div>
+  </main>
+  <section class="settings" id="settings" aria-label="Configurações dos contadores">
+    <h2>Configurar o painel</h2>
+    <p>Os dados ficam apenas neste navegador. O cálculo usa dias civis, independentemente de o aplicativo permanecer aberto.</p>
+    <form id="settingsForm">
+      <label>Data de nascimento<input id="birthDate" type="date" required></label>
+      <label>Idade de referência (anos)<input id="lifespan" type="number" min="1" max="150" value="85" required></label>
+      <label>Data do marco do projeto<input id="projectDate" type="date" required></label>
+      <label>Início da fase (opcional)<input id="phaseStart" type="date"></label>
+      <div class="form-actions"><button type="submit" class="primary">Salvar datas</button><button type="button" id="clear">Voltar à demonstração</button><span class="hint">Contagem em dias, sem segundos.</span></div>
+    </form>
+  </section>
+</div>
+<script>
+(()=>{
+  const ids=['birthDate','lifespan','projectDate','phaseStart'];
+  const $=id=>document.getElementById(id);
+  const format=n=>new Intl.NumberFormat('pt-BR',{maximumFractionDigits:0}).format(n);
+  const msDay=86400000;
+  const daysUTC=ymd=>{if(!/^\d{4}-\d{2}-\d{2}$/.test(ymd||''))return NaN;const [y,m,d]=ymd.split('-').map(Number);return Date.UTC(y,m-1,d)/msDay};
+  const localToday=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
+  let settings={};try{settings=JSON.parse(localStorage.getItem('mementoMoriDates')||'{}')||{}}catch(e){}
+  for (const id of ids){if(settings[id]!=null)$(id).value=settings[id]}
+  function redraw(){
+    const today=daysUTC(localToday());
+    $('todayLabel').textContent='ATUALIZADO · '+new Date().toLocaleDateString('pt-BR');
+    if(!settings.birthDate||!settings.projectDate||!Number(settings.lifespan)){
+      $('lifeDays').textContent='18.250';$('projectDays').textContent='365';$('lifeProgress').style.width='0%';$('lifeElapsed').textContent='Aguardando data de nascimento';$('lifePercent').textContent='—';$('phaseLabel').textContent='TEMPO NÃO É META';$('demoNote').classList.remove('hidden');return;
+    }
+    const [yr,mo,da]=settings.birthDate.split('-').map(Number);
+    const years=Number(settings.lifespan);
+    const target=Date.UTC(yr+years,mo-1,da)/msDay;
+    const born=daysUTC(settings.birthDate);
+    const milestone=daysUTC(settings.projectDate);
+    const remaining=Math.max(0,target-today);
+    const elapsed=Math.max(0,today-born);
+    const full=target-born;
+    const pct=full>0?Math.min(100,Math.max(0,100*elapsed/full)):0;
+    $('lifeDays').textContent=format(remaining);
+    $('projectDays').textContent=format(Math.max(0,milestone-today));
+    $('lifeProgress').style.width=pct+'%';
+    document.querySelector('.meter').setAttribute('aria-valuenow',String(Math.round(pct)));
+    $('lifeElapsed').textContent=format(elapsed)+' dias transcorridos';
+    $('lifePercent').textContent=pct.toFixed(1).replace('.',',')+'%';
+    $('phaseLabel').textContent=settings.phaseStart&&Number.isFinite(daysUTC(settings.phaseStart))?format(Math.max(0,today-daysUTC(settings.phaseStart)))+' DIAS DE FASE':'TEMPO NÃO É META';
+    $('demoNote').classList.add('hidden');
+  }
+  function toggle(force){const open=typeof force==='boolean'?force:!$('settings').classList.contains('open');$('settings').classList.toggle('open',open);$('config').setAttribute('aria-expanded',String(open));$('config').textContent=open?'Fechar':'Configurar'}
+  $('config').addEventListener('click',()=>toggle());
+  $('settingsForm').addEventListener('submit',ev=>{ev.preventDefault();const next=Object.fromEntries(ids.map(id=>[id,$(id).value]));const birth=daysUTC(next.birthDate),today=daysUTC(localToday()),target=Date.UTC(+next.birthDate.slice(0,4)+(+next.lifespan),+next.birthDate.slice(5,7)-1,+next.birthDate.slice(8,10))/msDay;if(!Number.isFinite(birth)||!Number.isFinite(target)||!Number.isFinite(daysUTC(next.projectDate))||target<=birth){alert('Verifique as datas informadas.');return}settings=next;localStorage.setItem('mementoMoriDates',JSON.stringify(settings));redraw();toggle(false)});
+  $('clear').addEventListener('click',()=>{settings={};localStorage.removeItem('mementoMoriDates');$('settingsForm').reset();redraw();toggle(false)});
+  redraw();setInterval(redraw,60000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)redraw()});
+})();
+</script>
+</body>
+</html>
